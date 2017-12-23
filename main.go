@@ -18,6 +18,7 @@ func main() {
 	http.HandleFunc("/", index)
 	http.HandleFunc("/about", about)
 	http.HandleFunc("/portfolio", portfolio)
+	http.HandleFunc("/blog", blog)
 	http.HandleFunc("/contact", contact)
 	http.HandleFunc("/resume", resume)
 	http.HandleFunc("/resume.pdf", resume)
@@ -39,6 +40,12 @@ func about(w http.ResponseWriter, req *http.Request) {
 }
 func portfolio(w http.ResponseWriter, req *http.Request) {
 	err := tpl.ExecuteTemplate(w, "portfolio.gohtml", nil)
+	if err != nil {
+		log.Println(err)
+	}
+}
+func blog(w http.ResponseWriter, req *http.Request) {
+	err := tpl.ExecuteTemplate(w, "bloghome.gohtml", nil)
 	if err != nil {
 		log.Println(err)
 	}
