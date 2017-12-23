@@ -13,8 +13,8 @@ func init() {
 }
 
 func main() {
-	fs := http.FileServer(http.Dir("/assets"))
-	http.Handle("/static/", http.StripPrefix("/assets", fs))
+	http.Handle("/static/", http.StripPrefix("/static", http.FileServer(http.Dir("./assets"))))
+	http.Handle("/favicon.ico", http.NotFoundHandler())
 	http.HandleFunc("/", index)
 	http.HandleFunc("/about", about)
 	http.HandleFunc("/portfolio", portfolio)
@@ -22,7 +22,6 @@ func main() {
 	http.HandleFunc("/contact", contact)
 	http.HandleFunc("/resume", resume)
 	http.HandleFunc("/resume.pdf", resume)
-	http.Handle("/favicon.ico", http.NotFoundHandler())
 	log.Fatalln(http.ListenAndServe(":9000", nil))
 }
 
@@ -57,5 +56,5 @@ func contact(w http.ResponseWriter, req *http.Request) {
 	}
 }
 func resume(w http.ResponseWriter, req *http.Request) {
-	http.ServeFile(w, req, "assets/resume.pdf")
+	http.Redirect(w, req, "/static/resume.pdf", http.StatusPermanentRedirect)
 }
