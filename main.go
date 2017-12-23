@@ -2,6 +2,7 @@ package main
 
 import (
 	"html/template"
+	"io"
 	"log"
 	"net/http"
 )
@@ -50,9 +51,14 @@ func blog(w http.ResponseWriter, req *http.Request) {
 	}
 }
 func contact(w http.ResponseWriter, req *http.Request) {
-	err := tpl.ExecuteTemplate(w, "contact.gohtml", nil)
-	if err != nil {
-		log.Println(err)
+	if req.Method == http.MethodGet {
+		err := tpl.ExecuteTemplate(w, "contact.gohtml", nil)
+		if err != nil {
+			log.Println(err)
+		}
+	} else if req.Method == http.MethodPost {
+		io.WriteString(w, "POST on /contact")
+		// Here we will execute SMTP setup for delivering mail to my email address
 	}
 }
 func resume(w http.ResponseWriter, req *http.Request) {
