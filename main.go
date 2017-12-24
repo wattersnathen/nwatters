@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"net/smtp"
 	"os"
+	"regexp"
+	"unicode"
 )
 
 var tpl *template.Template
@@ -57,7 +59,8 @@ func contact(w http.ResponseWriter, req *http.Request) {
 	if req.Method == http.MethodGet {
 		err := tpl.ExecuteTemplate(w, "contact.gohtml", nil)
 		if err != nil {
-			log.Println(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
 	} else if req.Method == http.MethodPost {
 		req.ParseForm()
@@ -66,6 +69,43 @@ func contact(w http.ResponseWriter, req *http.Request) {
 		from := req.FormValue("email")
 		subject := req.FormValue("subject")
 		body := req.FormValue("body")
+
+		if name == "" {
+			http.Redirect(w, req, "/contact", http.StatusFound)
+			return
+		}
+
+		if subject == "" {
+			http.Redirect(w, req, "/contact", http.StatusFound)
+			return
+		}
+
+		if from == "" {
+			http.Redirect(w, req, "/contact", http.StatusFound)
+			return
+		}
+
+		if m, _ := regexp.MatchString(`^([\w\.\_]{1,10})@(\w{1,}).([a-z]{2,4})$`, from); !m {
+			http.Redirect(w, req, "/contact", http.StatusFound)
+			return
+		}
+
+		if body == "" {
+			http.Redirect(w, req, "/contact", http.StatusFound)
+			return
+		}
+
+		var foundText bool
+		for _, char := range body {
+			if unicode.IsLetter(char) || unicode.IsDigit(char) {
+				foundText = true
+				break
+			}
+		}
+		if foundText == false {
+			http.Redirect(w, req, "/contact", http.StatusFound)
+			return
+		}
 
 		type EmailConfig struct {
 			Username string
@@ -77,7 +117,8 @@ func contact(w http.ResponseWriter, req *http.Request) {
 		emailConfig := EmailConfig{}
 		err := decoder.Decode(&emailConfig)
 		if err != nil {
-			log.Println(err)
+			http.Error(w, "Could not load config file for sending email", http.StatusInternalServerError)
+			return
 		}
 		auth := smtp.PlainAuth(
 			"",
@@ -109,7 +150,8 @@ func contact(w http.ResponseWriter, req *http.Request) {
 func contactConfirmation(w http.ResponseWriter, req *http.Request) {
 	err := tpl.ExecuteTemplate(w, "contact_confirmation.gohtml", nil)
 	if err != nil {
-		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 }
 func resume(w http.ResponseWriter, req *http.Request) {
