@@ -113,14 +113,25 @@ func contact(w http.ResponseWriter, req *http.Request) {
 			Password string
 		}
 
-		file, _ := os.Open("./config/smtp.json")
-		decoder := json.NewDecoder(file)
 		emailConfig := EmailConfig{}
-		err := decoder.Decode(&emailConfig)
-		if err != nil {
-			http.Error(w, "Could not load config file for sending email", http.StatusInternalServerError)
-			return
+		if val, found := os.LookupEnv("SMTP_USERNAME"); found {
+			emailConfig.Username = val
 		}
+
+		if val, found := os.LookupEnv("SMTP_PASSWORD"); found {
+			emailConfig.Password = val
+		}
+
+		if len(emailConfig.Username) == 0 {
+			file, _ := os.Open("./config/smtp.json")
+			decoder := json.NewDecoder(file)
+			err := decoder.Decode(&emailConfig)
+			if err != nil {
+				http.Error(w, "Could not load config file for SMTP credentials", http.StatusInternalServerError)
+				return
+			}
+		}
+
 		auth := smtp.PlainAuth(
 			"",
 			emailConfig.Username,
@@ -133,7 +144,7 @@ func contact(w http.ResponseWriter, req *http.Request) {
 			"Subject: " + subject + "\r\n" +
 			body
 
-		err = smtp.SendMail(
+		err := smtp.SendMail(
 			"smtp.gmail.com:587",
 			auth,
 			from,
