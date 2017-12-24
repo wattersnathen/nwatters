@@ -28,7 +28,7 @@ func main() {
 	http.HandleFunc("/contact-confirmation", contactConfirmation)
 	http.HandleFunc("/resume", resume)
 	http.HandleFunc("/resume.pdf", resume)
-	log.Fatalln(http.ListenAndServe(":9000", nil))
+	log.Fatalln(http.ListenAndServe(":80", nil))
 }
 
 func index(w http.ResponseWriter, req *http.Request) {
