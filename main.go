@@ -85,7 +85,7 @@ func contact(w http.ResponseWriter, req *http.Request) {
 			return
 		}
 
-		if m, _ := regexp.MatchString(`^([\w\.\_]{1,10})@(\w{1,}).([a-z]{2,4})$`, from); !m {
+		if m, _ := regexp.MatchString(`^([\w\.\_]{1,})@(\w{1,}).([a-z]{2,})$`, from); !m {
 			http.Redirect(w, req, "/contact", http.StatusFound)
 			return
 		}
