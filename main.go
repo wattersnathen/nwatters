@@ -28,7 +28,8 @@ func main() {
 	http.HandleFunc("/contact-confirmation", contactConfirmation)
 	http.HandleFunc("/resume", resume)
 	http.HandleFunc("/resume.pdf", resume)
-	log.Fatalln(http.ListenAndServe(":80", nil))
+	port := os.Getenv("PORT")
+	log.Fatalln(http.ListenAndServe(":"+port, nil))
 }
 
 func index(w http.ResponseWriter, req *http.Request) {
