@@ -8,7 +8,6 @@ import (
 	"net/smtp"
 	"os"
 	"regexp"
-	"unicode"
 )
 
 var tpl *template.Template
@@ -92,18 +91,6 @@ func contact(w http.ResponseWriter, req *http.Request) {
 		}
 
 		if body == "" {
-			http.Redirect(w, req, "/contact", http.StatusFound)
-			return
-		}
-
-		var foundText bool
-		for _, char := range body {
-			if unicode.IsLetter(char) || unicode.IsDigit(char) {
-				foundText = true
-				break
-			}
-		}
-		if foundText == false {
 			http.Redirect(w, req, "/contact", http.StatusFound)
 			return
 		}
