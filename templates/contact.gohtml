@@ -8,5 +8,28 @@
 </head>
 <body>
     {{ template "header_links" }}
+    <form method="POST" id="contact-form">
+        <div>
+            <input type="text" name="name" placeholder="name" required autofocus>
+        </div>
+        <div>
+            <input type="email" name="email" placeholder="email" required>
+        </div>
+        <div>
+            <input type="text" name="subject" placeholder="subject" required>
+        </div>
+        <div>
+            <textarea name="body" id="body" cols="30" rows="10"></textarea>
+        </div>
+        <div>
+            <input type="submit" value="Submit">
+        </div>
+    </form>
+    <div>
+        <span>
+            Rather email me from your email client?
+            <a href="mailto:wattersnathen@gmail.com">wattersnathen@gmail.com</a>
+        </span>
+    </div>
 </body>
 </html>
